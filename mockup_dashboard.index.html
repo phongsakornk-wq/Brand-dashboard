@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enabler E-Commerce Dashboard - Thailand</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        shopee: '#ee4d2d',
+                        lazada: '#0f146d',
+                        tiktok: '#000000',
+                        brand: '#3b82f6',
+                        target: '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .metric-card { transition: transform 0.2s ease-in-out; }
+        .metric-card:hover { transform: translateY(-3px); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .nav-link.active { background-color: #3b82f6; color: white; }
+        .nav-link { transition: all 0.2s; }
+        .sub-tab.active { border-color: #3b82f6; color: #3b82f6; font-weight: 600; }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col hidden md:flex z-20 shadow-xl">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-brand"></i>
+                OmniEnable TH
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">Brand Operations Center</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="switchPage('page-overview', this)" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-left">
+                <i class="fa-solid fa-bullseye w-5"></i> 1. Overview & Targets
+            </button>
+            <button onclick="switchPage('page-mechanics', this)" class="nav-link text-slate-300 hover:bg-slate-800 hover:text-white w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-left">
+                <i class="fa-solid fa-rocket w-5"></i> 2. Marketing Mechanics
+            </button>
+            <button onclick="switchPage('page-deep-dive', this)" class="nav-link text-slate-300 hover:bg-slate-800 hover:text-white w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-left">
+                <i class="fa-solid fa-chart-pie w-5"></i> 3. Channel Deep-Dive
+            </button>
+            <button onclick="switchPage('page-products', this)" class="nav-link text-slate-300 hover:bg-slate-800 hover:text-white w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-left">
+                <i class="fa-solid fa-boxes-stacked w-5"></i> 4. Product & Category
+            </button>
+        </nav>
+        <div class="p-4 border-t border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
+                    <i class="fa-solid fa-user text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Account Manager</p>
+                    <p class="text-xs text-slate-400">admin@omnienable.com</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative">
+        
+        <!-- Top Header -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4 flex flex-col sm:flex-row justify-between items-center sticky top-0 z-10 gap-4 shadow-sm">
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <select id="brandSelector" onchange="updateBrandData()" class="appearance-none bg-slate-50 border border-slate-300 text-slate-700 py-2 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand font-semibold">
+                        <option value="cosmetics">Brand: Acme Cosmetics TH</option>
+                        <option value="tech">Brand: TechGear Plus</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="bg-slate-100 text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2">
+                    <i class="fa-regular fa-calendar"></i>
+                    May 1 - May 28, 2026
+                </div>
+                <button class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    <i class="fa-solid fa-download mr-1"></i> Export
+                </button>
+            </div>
+        </header>
+
+        <div class="p-8">
+            <!-- ========================================== -->
+            <!-- PAGE 1: OVERVIEW & TARGETS                 -->
+            <!-- ========================================== -->
+            <div id="page-overview" class="page-content block">
+                <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Sales vs Target Pacing</h2>
+                        <p class="text-slate-500 text-sm mt-1 font-medium">Key e-commerce metrics compared with LY same period & Targets.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-500 font-semibold uppercase">Comparison Frame:</span>
+                        <select id="pacingComparisonSelector" onchange="updateBrandData()" class="bg-white border border-slate-300 rounded px-2 py-1 text-xs font-semibold text-slate-700">
+                            <option value="ly">vs. LY Same Period (May-&apos;25)</option>
+                            <option value="mom">vs. MoM (Apr-&apos;26)</option>
+                        </select>
+                        <button onclick="generateOverviewSummary()" class="bg-gradient-to-r from-brand to-indigo-600 hover:from-brand hover:to-indigo-700 text-white font-semibold py-1.5 px-3 rounded text-xs shadow-sm flex items-center gap-2 transition-all">
+                            <span>✨ Generate Executive Summary</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5 Metrics Grid (LY comparison and Versus Target built-in) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                    <!-- Card 1: GMV -->
+                    <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Gross Revenue (GMV)</p>
+                            <h3 id="card-gmv" class="text-xl font-bold text-slate-800 mt-1">฿1,425,000</h3>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Comp. Period:</span>
+                            <span id="card-gmv-pct" class="font-bold text-green-600">+23.9%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 2: Orders -->
+                    <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Orders</p>
+                            <h3 id="card-orders" class="text-xl font-bold text-slate-800 mt-1">5,140</h3>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Comp. Period:</span>
+                            <span id="card-orders-pct" class="font-bold text-green-600">+14.2%</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: AOV -->
+                    <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase">AOV</p>
+                            <h3 id="card-aov" class="text-xl font-bold text-slate-800 mt-1">฿277</h3>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Comp. Period:</span>
+                            <span id="card-aov-pct" class="font-bold text-green-600">+8.5%</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: CR% -->
+                    <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Blended CR%</p>
+                            <h3 id="card-cr" class="text-xl font-bold text-slate-800 mt-1">2.77%</h3>
+                        </div>
+                        <div class="mt-4 pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Comp. Period:</span>
+                            <span id="card-cr-pct" class="font-bold text-red-500">-0.23%</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: GMV vs Target (New requested 5th card) -->
+                    <div class="metric-card bg-gradient-to-br from-slate-50 to-blue-50 p-4 rounded-xl border border-blue-100 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-blue-600 uppercase">GMV vs. Target Goal</p>
+                            <h3 id="card-target-gap" class="text-xl font-bold text-slate-800 mt-1">95.0% Achieved</h3>
+                        </div>
+                        <div class="mt-4">
+                            <div class="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+                                <div id="card-target-bar" class="bg-brand h-1.5 rounded-full" style="width: 95%"></div>
+                            </div>
+                            <span id="card-target-text" class="text-[10px] text-slate-400 block text-right">Target Gap: ฿75,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Run-Rate & Daily Velocity KPI Scorecards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-4 rounded-xl shadow-sm">
+                        <p class="text-xs font-semibold text-indigo-100 uppercase tracking-wider">Pacing Target Attained</p>
+                        <h4 id="runrate-pct-score" class="text-2xl font-bold mt-1">95.0%</h4>
+                        <p class="text-[11px] text-indigo-100 mt-1">Current Month Pacing Velocity</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-4 rounded-xl shadow-sm">
+                        <p class="text-xs font-semibold text-emerald-100 uppercase tracking-wider">Remaining Target Balance</p>
+                        <h4 id="runrate-rem-score" class="text-2xl font-bold mt-1">฿75,000</h4>
+                        <p class="text-[11px] text-emerald-100 mt-1">Gap to hit monthly close goal</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-xl shadow-sm">
+                        <p class="text-xs font-semibold text-blue-100 uppercase tracking-wider">Required Daily Velocity</p>
+                        <h4 id="runrate-daily-req" class="text-2xl font-bold mt-1">฿25,000 / Day</h4>
+                        <p class="text-[11px] text-blue-100 mt-1">For remaining 3 days of May</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Chart 1: Jan to Dec Actual Performance + YoY % Change Line (No targets shown) -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-base font-bold text-slate-800">12-Month Performance (Actual GMV vs YoY% Change)</h3>
+                            <span class="text-xs font-semibold bg-blue-50 text-blue-700 px-2 py-1 rounded">YTD Trend & YoY Progression</span>
+                        </div>
+                        <div class="relative h-80 w-full">
+                            <canvas id="yoyGrowthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Daily Sales Actual vs Target (Non-cumulative, discrete) -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-base font-bold text-slate-800">Daily Sales vs Daily Target (Discrete)</h3>
+                            <span class="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded">Full Month Run-Rate</span>
+                        </div>
+                        <div class="relative h-80 w-full">
+                            <canvas id="dailyVelocityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Share & Channel breakdown with Period Filters and Grand Total -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                            <h3 class="text-base font-bold text-slate-800">Platform Channel Breakdown (Detailed Analytics)</h3>
+                            <!-- Period Comparison Filter -->
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-500 font-medium">Compare Period:</span>
+                                <div class="relative">
+                                    <select id="tablePeriodSelector" onchange="updatePlatformTable()" class="appearance-none bg-slate-50 border border-slate-300 text-xs text-slate-700 py-1 pl-2 pr-8 rounded focus:outline-none focus:ring-1 focus:ring-brand font-medium">
+                                        <option value="ly">vs. LY same period (May-&apos;25)</option>
+                                        <option value="mom">vs. MoM Baseline (Apr-&apos;26)</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-xs text-slate-400 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="py-3 px-2 font-semibold">Platform</th>
+                                        <th class="py-3 px-2 text-right font-semibold">GMV MTD</th>
+                                        <th class="py-3 px-2 text-right font-semibold">Comp GMV</th>
+                                        <th class="py-3 px-2 text-right font-semibold">Traffic (UV)</th>
+                                        <th class="py-3 px-2 text-right font-semibold">Orders</th>
+                                        <th class="py-3 px-2 text-right font-semibold">AOV (Blended)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="platform-breakdown-tbody">
+                                    <!-- Dynamic rows injected by updatePlatformTable() -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-base font-bold text-slate-800">GMV Share by Platform</h3>
+                            <!-- SOB Timeframe Selector -->
+                            <div class="relative">
+                                <select id="sobTimeframeSelector" onchange="updateSOBTimeframe()" class="appearance-none bg-slate-50 border border-slate-300 text-xs text-slate-700 py-1 pl-2 pr-6 rounded focus:outline-none focus:ring-1 focus:ring-brand font-medium">
+                                    <option value="current">May &apos;26 MTD</option>
+                                    <option value="historical">Apr &apos;26 (Baseline)</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative h-56 w-full flex-1 flex justify-center items-center">
+                            <canvas id="platformShareChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PAGE 2: MECHANICS OVERVIEW                 -->
+            <!-- ========================================== -->
+            <div id="page-mechanics" class="page-content hidden">
+                <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Marketing Mechanics & Drivers</h2>
+                        <p class="text-slate-500 text-sm mt-1">Analyzing spending effectiveness and ROI drivers across core marketing pillars.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-500 font-medium">Comparison frame (Page 2):</span>
+                        <select id="mechanicsPeriodSelector" onchange="updateMechanicsData()" class="bg-white border border-slate-300 rounded px-2 py-1 text-xs font-semibold text-slate-700">
+                            <option value="ly">vs. LY Same Period (May-&apos;25)</option>
+                            <option value="mom">vs. MoM (Apr-&apos;26)</option>
+                        </select>
+                        <button onclick="generateMechanicsOptimization()" class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold py-1.5 px-3 rounded text-xs shadow-sm flex items-center gap-2 transition-all">
+                            <span>✨ Optimize ROI</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Optimization Panel -->
+                <div id="mechanicsSummaryBox" class="hidden mb-8 bg-gradient-to-r from-slate-50 to-violet-50 border border-violet-200 rounded-xl p-6 shadow-sm relative">
+                    <button onclick="closeSummaryBox('mechanicsSummaryBox')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                    <div class="flex items-start gap-4">
+                        <div class="text-2xl text-violet-600 mt-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                ✨ Marketing Optimization Plan (AI Pilot)
+                            </h4>
+                            <div id="mechanicsSummaryText" class="text-slate-700 text-sm space-y-2 whitespace-pre-wrap leading-relaxed">
+                                Loading analysis...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Metrics with CIR% Added -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+                    <!-- Ads ROI -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-t-4 border-t-blue-500 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500 mb-1"><i class="fa-solid fa-ad text-blue-500 mr-1"></i> Paid Ads (CPAS/Search)</p>
+                            <h3 id="mechanic-ads-spend" class="text-2xl font-bold text-slate-800">฿180,000 <span class="text-sm text-slate-400 font-normal">Spend</span></h3>
+                        </div>
+                        <div class="mt-3 bg-slate-50 p-2 rounded text-xs space-y-1">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Ad GMV:</span>
+                                <span id="mechanic-ads-gmv" class="font-bold text-slate-800">฿720,000</span>
+                            </div>
+                            <div class="flex justify-between text-blue-600 font-semibold">
+                                <span>ROAS MTD:</span>
+                                <span id="mechanic-ads-roas">4.0x</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Livestream -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-t-4 border-t-red-500 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500 mb-1"><i class="fa-solid fa-video text-red-500 mr-1"></i> Livestream (Shopee/TikTok)</p>
+                            <h3 id="mechanic-live-views" class="text-2xl font-bold text-slate-800">45,200 <span class="text-sm text-slate-400 font-normal">Views</span></h3>
+                        </div>
+                        <div class="mt-3 bg-slate-50 p-2 rounded text-xs space-y-1">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Live GMV:</span>
+                                <span id="mechanic-live-gmv" class="font-bold text-slate-800">฿350,000</span>
+                            </div>
+                            <div class="flex justify-between text-red-600 font-semibold">
+                                <span>Sessions:</span>
+                                <span id="mechanic-live-sessions">18 Sessions MTD</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Affiliate -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-t-4 border-t-purple-500 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500 mb-1"><i class="fa-solid fa-handshake text-purple-500 mr-1"></i> Affiliates & KOLs</p>
+                            <h3 id="mechanic-affiliate-creators" class="text-2xl font-bold text-slate-800">124 <span class="text-sm text-slate-400 font-normal">Active KOLs</span></h3>
+                        </div>
+                        <div class="mt-3 bg-slate-50 p-2 rounded text-xs space-y-1">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">KOL GMV:</span>
+                                <span id="mechanic-affiliate-gmv" class="font-bold text-slate-800">฿255,000</span>
+                            </div>
+                            <div class="flex justify-between text-purple-600 font-semibold">
+                                <span>Commission:</span>
+                                <span id="mechanic-affiliate-comm">Avg Commission: 12%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brand Cost to Income Ratio CIR% Card (New Request) -->
+                    <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-5 rounded-xl border border-indigo-200 shadow-sm border-t-4 border-t-indigo-500 flex flex-col justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-indigo-700 mb-1"><i class="fa-solid fa-scale-balanced mr-1"></i> Blended CIR%</p>
+                            <h3 id="mechanic-blended-cir" class="text-2xl font-bold text-indigo-950 mt-1">16.3%</h3>
+                        </div>
+                        <p class="text-[11px] text-indigo-700 mt-2 font-medium">Blended Marketing Cost relative to Platform GMV</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                        <h3 class="text-base font-bold text-slate-800">Campaign Mechanics Breakdown Comparison</h3>
+                        <span id="mechanics-table-comp-badge" class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600">vs May-&apos;25 Same Period</span>
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                <th class="px-6 py-4 font-semibold">Mechanic / Channel</th>
+                                <th class="px-6 py-4 font-semibold text-right">GMV (Sales)</th>
+                                <th class="px-6 py-4 font-semibold text-right">Spending</th>
+                                <th class="px-6 py-4 font-semibold text-right">ROAS / ROI</th>
+                                <th class="px-6 py-4 font-semibold text-right">CIR %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mechanics-comparison-tbody" class="divide-y divide-slate-100">
+                            <!-- Injected dynamically in updateMechanicsData() -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PAGE 3: PERFORMANCE DEEP-DIVE              -->
+            <!-- ========================================== -->
+            <div id="page-deep-dive" class="page-content hidden">
+                <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Channel Performance Deep-Dive</h2>
+                        <p class="text-slate-500 text-sm mt-1">Granular breakdown of operational mechanics to evaluate brand growth.</p>
+                    </div>
+                    <div>
+                        <button onclick="auditChannelBudgets()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2 transition-all">
+                            <span>✨ Run AI Budget Audit</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Budget Auditor Box -->
+                <div id="deepDiveSummaryBox" class="hidden mb-8 bg-gradient-to-r from-slate-50 to-emerald-50 border border-emerald-200 rounded-xl p-6 shadow-sm relative">
+                    <button onclick="closeSummaryBox('deepDiveSummaryBox')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                    <div class="flex items-start gap-4">
+                        <div class="text-2xl text-emerald-600 mt-1">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 mb-2">✨ Channel Reallocation Strategy (AI Auditor)</h4>
+                            <div id="deepDiveSummaryText" class="text-slate-700 text-sm space-y-2 whitespace-pre-wrap leading-relaxed">
+                                Auditing metrics...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-tab Bar -->
+                <div class="flex border-b border-slate-200 mb-6 gap-6">
+                    <button onclick="switchDeepDiveTab('ads-sub-tab', this)" class="sub-tab active pb-3 text-sm font-medium border-b-2 border-transparent hover:text-brand transition-colors">
+                        <i class="fa-solid fa-ad mr-1"></i> Paid Ads Funnel
+                    </button>
+                    <button onclick="switchDeepDiveTab('live-sub-tab', this)" class="sub-tab pb-3 text-sm font-medium border-b-2 border-transparent hover:text-brand transition-colors">
+                        <i class="fa-solid fa-video mr-1"></i> Livestream Analysis
+                    </button>
+                    <button onclick="switchDeepDiveTab('affiliate-sub-tab', this)" class="sub-tab pb-3 text-sm font-medium border-b-2 border-transparent hover:text-brand transition-colors">
+                        <i class="fa-solid fa-handshake mr-1"></i> Affiliate Network
+                    </button>
+                </div>
+
+                <!-- Ads Sub-tab Content (Breakdown for Paid Ads with Traffic included) -->
+                <div id="ads-sub-tab" class="deep-dive-panel block space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Ads Funnel Widget with exact conversion funnels -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm col-span-1 flex flex-col justify-between">
+                            <h3 class="font-bold text-slate-800 mb-4">Paid Ads Conversion Funnel</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-500 mb-1">
+                                        <span>1. Impressions (Paid)</span>
+                                        <span id="ads-funnel-imp">2,450,000</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-blue-400 h-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-500 mb-1">
+                                        <span>2. Paid Traffic (Clicks)</span>
+                                        <span id="ads-funnel-click">122,500</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-blue-500 h-full" style="width: 5%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-slate-500 mb-1">
+                                        <span>3. Purchases</span>
+                                        <span id="ads-funnel-conv">3,120</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-blue-600 h-full" style="width: 2.5%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Platform Ads Grid (Now includes CPC Traffic & platform metrics) -->
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                                <h3 class="font-bold text-slate-800">Ads KPI with Traffic Click Breakdown</h3>
+                            </div>
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="px-6 py-3 font-semibold">Solution</th>
+                                        <th class="px-4 py-3 font-semibold text-right">Traffic Clicks</th>
+                                        <th class="px-4 py-3 font-semibold text-right">CTR%</th>
+                                        <th class="px-4 py-3 font-semibold text-right">CPC (THB)</th>
+                                        <th class="px-4 py-3 font-semibold text-right">Spend</th>
+                                        <th class="px-4 py-3 font-semibold text-right">ROAS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ads-breakdown-rows" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Injected dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Livestream Sub-tab Content -->
+                <div id="live-sub-tab" class="deep-dive-panel hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Live Core Metrics (Live Hours & GMV per hour added) -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="font-bold text-slate-800">Livestream Engagement & Productivity</h3>
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">Peak Concurrent Viewers (PCV)</p>
+                                <h4 id="live-pcv" class="text-xl font-bold text-slate-800">4,200 Viewers</h4>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">Total Broadcast Duration</p>
+                                <h4 id="live-hours" class="text-xl font-bold text-brand">54 Hours</h4>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">GMV generated per Hour</p>
+                                <h4 id="live-gmv-per-hr" class="text-xl font-bold text-emerald-600">฿6,481 / Hr</h4>
+                            </div>
+                        </div>
+
+                        <!-- Live Session Table -->
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                                <h3 class="font-bold text-slate-800">Top Livestream Broadcast Logs</h3>
+                            </div>
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="px-6 py-3 font-semibold">Session Title</th>
+                                        <th class="px-4 py-3 font-semibold text-right">Live Hrs</th>
+                                        <th class="px-4 py-3 font-semibold text-right">Views</th>
+                                        <th class="px-4 py-3 font-semibold text-right">Orders</th>
+                                        <th class="px-6 py-3 font-semibold text-right">GMV/Hour</th>
+                                        <th class="px-6 py-3 font-semibold text-right">Total GMV (THB)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="live-sessions-rows" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Injected dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Daily GMV Live Trend (3-line chart display) -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 mb-4">Daily Live Broadcast GMV Trend (May-&apos;26)</h3>
+                        <div class="relative h-64 w-full">
+                            <canvas id="liveGMVTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Affiliate Sub-tab Content -->
+                <div id="affiliate-sub-tab" class="deep-dive-panel hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Affiliate KOL Tier Distribution -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <h3 class="font-bold text-slate-800 mb-4">KOL Tier GMV Share</h3>
+                            <div class="space-y-4 flex-1 flex flex-col justify-center">
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                        <span>Mega / Star Influencers (>1M)</span>
+                                        <span id="aff-mega-pct" class="font-bold text-slate-800">35%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-purple-600 h-full" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                        <span>Macro / Mid KOLs (100k - 1M)</span>
+                                        <span id="aff-macro-pct" class="font-bold text-slate-800">45%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-indigo-600 h-full" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                        <span>Micro / Nano Creators (<100k)</span>
+                                        <span id="aff-micro-pct" class="font-bold text-slate-800">20%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-blue-600 h-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Affiliates Board with Product & Creator specific details -->
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                                <h3 class="font-bold text-slate-800">Affiliate Product Performance by Creator & Platform</h3>
+                            </div>
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="px-6 py-3 font-semibold">Creator ID</th>
+                                        <th class="px-4 py-3 font-semibold text-center">Platform</th>
+                                        <th class="px-4 py-3 font-semibold">Top Performing SKU</th>
+                                        <th class="px-4 py-3 font-semibold text-right">Units Sold</th>
+                                        <th class="px-6 py-3 font-semibold text-right">GMV Contribution</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="affiliate-leader-rows" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Injected dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PAGE 4: PRODUCT & CATEGORY (L2 & STOCK)   -->
+            <!-- ========================================== -->
+            <div id="page-products" class="page-content hidden">
+                <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Category & Product Movement</h2>
+                        <p class="text-slate-500 text-sm mt-1">Identify top-moving categories and monitor SKU-level inventory health.</p>
+                    </div>
+                    <div>
+                        <button onclick="generateInventoryPlan()" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm flex items-center gap-2 transition-all">
+                            <span>✨ Create Stock-out Mitigation Strategy</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Inventory Plan Panel -->
+                <div id="productsSummaryBox" class="hidden mb-8 bg-gradient-to-r from-slate-50 to-amber-50 border border-amber-200 rounded-xl p-6 shadow-sm relative">
+                    <button onclick="closeSummaryBox('productsSummaryBox')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                    <div class="flex items-start gap-4">
+                        <div class="text-2xl text-amber-600 mt-1">
+                            <i class="fa-solid fa-boxes-packing"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                ✨ SKU Inventory & SLA Safeguard (AI Pilot)
+                            </h4>
+                            <div id="productsSummaryText" class="text-slate-700 text-sm space-y-2 whitespace-pre-wrap leading-relaxed">
+                                Loading analysis...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Category Mix Chart with L2 Drill-Down -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-base font-bold text-slate-800">GMV by Category (L1 Drillable)</h3>
+                            <button id="categoryResetBtn" onclick="resetCategoryDrill()" class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded font-semibold">
+                                <i class="fa-solid fa-arrow-left"></i> Reset
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-2">💡 Click on skincare or other categories to drill down to L2 sub-levels.</p>
+                        <div class="relative h-64 w-full flex-1">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top SKUs Table (Now Includes Days of Stock Cover) -->
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                            <h3 class="text-base font-bold text-slate-800">Top Moving SKUs & Stock Cover Health</h3>
+                            <span class="text-[11px] font-semibold text-slate-400">Inventory SLA Status</span>
+                        </div>
+                        <div class="overflow-x-auto h-72">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="sticky top-0 bg-white">
+                                    <tr class="text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="px-6 py-3 font-semibold">SKU Name</th>
+                                        <th class="px-4 py-3 font-semibold text-right">Units Sold</th>
+                                        <th class="px-4 py-3 font-semibold text-right">GMV</th>
+                                        <th class="px-6 py-3 font-semibold text-center">Days of Stock Cover</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-skus-body" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Dynamic rows injected by JavaScript depending on selected brand -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comprehensive SKU Performance Historical Comparison Table (New Request) -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800">Comprehensive Product Performance Comparison</h3>
+                            <p class="text-xs text-slate-500">Compare units sold, GMV, traffic, order counts, and ASP against historical baselines.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-500 font-medium">Comparison Period:</span>
+                            <div class="relative">
+                                <select id="productTablePeriodSelector" onchange="updateProductPerformanceTable()" class="appearance-none bg-slate-50 border border-slate-300 text-xs text-slate-700 py-1 pl-2 pr-8 rounded focus:outline-none focus:ring-1 focus:ring-brand font-medium">
+                                    <option value="ly">vs. LY Same Period (May-&apos;25)</option>
+                                    <option value="mom">vs. MoM Baseline (Apr-&apos;26)</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="text-xs text-slate-500 uppercase border-b border-slate-200 bg-slate-50">
+                                    <th class="py-3 px-4 font-semibold">SKU Name</th>
+                                    <th class="py-3 px-2 text-right font-semibold">Units Sold MTD</th>
+                                    <th class="py-3 px-2 text-right font-semibold">GMV MTD</th>
+                                    <th class="py-3 px-2 text-right font-semibold">Traffic (Clicks)</th>
+                                    <th class="py-3 px-2 text-right font-semibold">Orders MTD</th>
+                                    <th class="py-3 px-4 text-right font-semibold">ASP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-performance-tbody" class="divide-y divide-slate-100">
+                                <!-- Dynamic rows injected by updateProductPerformanceTable() -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="text-center text-sm text-slate-500 pb-8 mt-4">
+                &copy; 2026 OmniEnable Operations Dashboard. All rights reserved.
+            </footer>
+        </div>
+    </main>
+
+    <!-- UI, Mock Data & Gemini Chart Logic -->
+    <script>
+        const apiKey = ""; // The environment provides the API key at runtime. Do not add static key validation logic.
+
+        // Format raw currency values into readable THB string
+        // DEFINED UPSTREAM to prevent ReferenceError
+        function formatTHB(num) {
+            return "฿" + num.toLocaleString();
+        }
+
+        // Global dataset supporting cosmetics & tech options, including the new Deep-dive page metrics
+        const dataStore = {
+            cosmetics: {
+                gmv: "฿1,425,000", gmvTarget: "฿1,500,000", gmvPct: "95.0%",
+                orders: "5,140", ordersTarget: "6,000", ordersPct: "85.7%",
+                aov: "฿277", aovTarget: "฿250", aovPct: "110.8%",
+                cr: "2.77%", crTarget: "3.00%", crPct: "92.3%",
+                
+                // MTD/LY/MoM metric differences for pacing
+                currentSalesVal: 1425000,
+                targetSalesVal: 1500000,
+                lySalesVal: 1150000,
+                momSalesVal: 1350000,
+
+                currentOrdersVal: 5140,
+                lyOrdersVal: 4500,
+                momOrdersVal: 4900,
+
+                currentAovVal: 277,
+                lyAovVal: 255,
+                momAovVal: 275,
+
+                currentCrVal: 2.77,
+                lyCrVal: 3.00,
+                momCrVal: 2.80,
+
+                // Daily Run-Rate metrics
+                achievementPct: "95.0%",
+                gapTarget: "฿75,000",
+                dailyVelocityRequired: "฿25,000 / Day",
+
+                // Category drill data L1 -> L2
+                categoryLabels: ['Skincare', 'Makeup', 'Body Care', 'Accessories'],
+                categoryData: [55, 25, 15, 5],
+                categoryL2: {
+                    'Skincare': {
+                        labels: ['Serums', 'Creams', 'Cleansers', 'Toner'],
+                        data: [45, 30, 15, 10]
+                    },
+                    'Makeup': {
+                        labels: ['Lipsticks', 'Foundation', 'Mascara', 'Eyeliner'],
+                        data: [50, 20, 20, 10]
+                    }
+                },
+
+                // Share of Business historical baseline comparison
+                sobCurrent: [42, 35, 23], // Shopee, Lazada, TikTok (May '26 MTD)
+                sobHistorical: [50, 38, 12], // Apr '26 Baseline
+
+                // Grand Total Platform breakdowns
+                shopeeGmvVal: 598500,
+                lazadaGmvVal: 498750,
+                tiktokGmvVal: 327750,
+
+                shopeeGmvValHistMoM: 575000, // Apr '26
+                lazadaGmvValHistMoM: 437000,
+                tiktokGmvValHistMoM: 138000,
+
+                shopeeGmvValHistYoY: 480000, // May '25
+                lazadaGmvValHistYoY: 420000,
+                tiktokGmvValHistYoY: 250000,
+
+                // Platform Traffic Clicks
+                shopeeTraffic: 51000,
+                lazadaTraffic: 40050,
+                tiktokTraffic: 21000,
+
+                shopeeTrafficMoM: 49000,
+                lazadaTrafficMoM: 38000,
+                tiktokTrafficMoM: 12000,
+
+                shopeeTrafficYoY: 45000,
+                lazadaTrafficYoY: 35000,
+                tiktokTrafficYoY: 18000,
+
+                // Orders per platform
+                shopeeOrders: 2300,
+                lazadaOrders: 1610,
+                tiktokOrders: 1230,
+
+                shopeeOrdersMoM: 2100,
+                lazadaOrdersMoM: 1550,
+                tiktokOrdersMoM: 800,
+
+                shopeeOrdersYoY: 1900,
+                lazadaOrdersYoY: 1400,
+                tiktokOrdersYoY: 1100,
+
+                // Mechanics Compare periods (Spending / GMV / ROAS)
+                mechanicsCompare: {
+                    ly: [
+                        { name: "Paid Ads (CPAS/Search)", gmv: 720000, compGmv: 580000, spend: 180000, compSpend: 150000, roas: 4.0, compRoas: 3.8 },
+                        { name: "Livestream (Shopee/TikTok)", gmv: 350000, compGmv: 250000, spend: 42000, compSpend: 35000, roas: 8.3, compRoas: 7.1 },
+                        { name: "Affiliates & KOLs", gmv: 255000, compGmv: 180000, spend: 30600, compSpend: 20000, roas: 8.3, compRoas: 9.0 }
+                    ],
+                    mom: [
+                        { name: "Paid Ads (CPAS/Search)", gmv: 720000, compGmv: 690000, spend: 180000, compSpend: 175000, roas: 4.0, compRoas: 3.9 },
+                        { name: "Livestream (Shopee/TikTok)", gmv: 350000, compGmv: 320000, spend: 42000, compSpend: 40000, roas: 8.3, compRoas: 8.0 },
+                        { name: "Affiliates & KOLs", gmv: 255000, compGmv: 240000, spend: 30600, compSpend: 28000, roas: 8.3, compRoas: 8.5 }
+                    ]
+                },
+
+                // Page 3: Deep Dive Channels
+                deepDive: {
+                    ads: {
+                        impressions: "2,450,000", clicks: "122,500", conversions: "3,120",
+                        solutions: [
+                            { name: "Shopee CPAS Ads", clicks: 51000, ctr: "5.1%", cpc: "฿1.8", spend: "฿100,000", roas: "4.2x" },
+                            { name: "Lazada Sponsored Search", clicks: 40050, ctr: "4.2%", cpc: "฿2.2", spend: "฿50,000", roas: "3.7x" },
+                            { name: "TikTok Video Shopping Ads", clicks: 31450, ctr: "5.8%", cpc: "฿1.4", spend: "฿30,000", roas: "4.8x" }
+                        ]
+                    },
+                    live: {
+                        pcv: "4,200 Viewers", durationHours: 54, gmvPerHr: 6481,
+                        sessions: [
+                            { title: "TikTok 5.5 Mega Sale Beauty Rush", hours: 12, views: "18,400", orders: "552", gmv: 165600 },
+                            { title: "Shopee Live: Mid-Month Cosmetics Glow", hours: 8, views: "14,100", orders: "341", gmv: 102300 },
+                            { title: "Lazada Live Everyday Skincare", hours: 6, views: "12,700", orders: "220", gmv: 66000 }
+                        ],
+                        // Daily GMV lines for (Shopee, Lazada, TikTok Live)
+                        shpTrend: [10, 12, 11, 15, 25, 18, 14, 11, 12, 13, 11, 15, 20, 22, 16, 12, 11, 12, 13, 14, 15, 18, 16, 13, 12, 11, 14, 15],
+                        lzdTrend: [8, 9, 10, 12, 15, 12, 10, 9, 10, 11, 9, 11, 14, 16, 12, 10, 9, 10, 11, 12, 13, 15, 14, 11, 10, 9, 11, 12],
+                        ttTrend: [6, 7, 8, 10, 22, 14, 11, 9, 10, 11, 10, 12, 13, 18, 14, 11, 10, 11, 11, 12, 13, 16, 15, 12, 11, 10, 12, 14]
+                    },
+                    affiliate: {
+                        mega: "35%", macro: "45%", micro: "20%",
+                        creators: [
+                            { id: "@pimrypie_beauty", platform: "TikTok TH", sku: "Radiant Glow Serum 30ml", units: 640, gmv: 192000 },
+                            { id: "@icepadie_makeup", platform: "TikTok TH", sku: "Matte Liquid Lipstick - Ruby", units: 210, gmv: 42000 },
+                            { id: "@beauty_blogger_shopee", platform: "Shopee Network", sku: "Hydrating Night Cream 50g", units: 80, gmv: 21000 }
+                        ]
+                    }
+                },
+
+                // Products specific inventory & comprehensive metrics
+                skus: [
+                    { name: "Radiant Glow Serum 30ml", units: 1240, gmv: 434000, traffic: 12000, orders: 1200, health: "Good (32 days)", healthColor: "green", lyUnits: 1000, lyGmv: 350000, lyTraffic: 10500, lyOrders: 980, momUnits: 1200, momGmv: 420000, momTraffic: 11800, momOrders: 1150 },
+                    { name: "Matte Liquid Lipstick - Ruby", units: 980, gmv: 147000, traffic: 8900, orders: 950, health: "Critical (5 days)", healthColor: "red", lyUnits: 800, lyGmv: 120000, lyTraffic: 7200, lyOrders: 780, momUnits: 960, momGmv: 144000, momTraffic: 8800, momOrders: 930 },
+                    { name: "Hydrating Night Cream 50g", units: 850, gmv: 212500, traffic: 7200, orders: 820, health: "Good (22 days)", healthColor: "green", lyUnits: 700, lyGmv: 175000, lyTraffic: 6100, lyOrders: 680, momUnits: 840, momGmv: 210000, momTraffic: 7100, momOrders: 810 },
+                    { name: "UV Shield Sunscreen SPF50", units: 720, gmv: 180000, traffic: 6100, orders: 700, health: "Low (12 days)", healthColor: "yellow", lyUnits: 500, lyGmv: 125000, lyTraffic: 4800, lyOrders: 480, momUnits: 710, momGmv: 177500, momTraffic: 6000, momOrders: 690 }
+                ],
+
+                // Discrete full month daily actuals & daily targets
+                dailyActuals: [38, 41, 39, 42, 68, 55, 40, 39, 44, 43, 41, 46, 52, 61, 48, 42, 38, 40, 42, 45, 49, 58, 51, 44, 43, 41, 45, 48, null, null, null], // Null for remaining 3 days
+                dailyTargets: [40, 40, 40, 40, 60, 45, 42, 42, 42, 42, 42, 42, 42, 55, 45, 42, 42, 42, 42, 42, 42, 50, 45, 42, 42, 42, 42, 42, 42, 42, 42]
+            },
+            tech: {
+                gmv: "฿3,240,000", gmvTarget: "฿3,000,000", gmvPct: "108.0%",
+                orders: "2,150", ordersTarget: "2,000", ordersPct: "107.5%",
+                aov: "฿1,506", aovTarget: "฿1,500", aovPct: "100.4%",
+                cr: "1.85%", crTarget: "1.80%", crPct: "102.7%",
+                
+                // MTD/LY/MoM metrics for pacing
+                currentSalesVal: 3240000,
+                targetSalesVal: 3000000,
+                lySalesVal: 2500000,
+                momSalesVal: 2950000,
+
+                currentOrdersVal: 2150,
+                lyOrdersVal: 1800,
+                momOrdersVal: 2000,
+
+                currentAovVal: 1506,
+                lyAovVal: 1388,
+                momAovVal: 1475,
+
+                currentCrVal: 1.85,
+                lyCrVal: 1.80,
+                momCrVal: 1.82,
+
+                // Daily Run-Rate metrics
+                achievementPct: "108.0%",
+                gapTarget: "-฿240,000 (Met)",
+                dailyVelocityRequired: "฿0 / Day (Goal Hit)",
+
+                // Category drill data L1 -> L2
+                categoryLabels: ['Mobile Accs', 'Smart Home', 'Wearables', 'Audio'],
+                categoryData: [45, 30, 20, 5],
+                categoryL2: {
+                    'Mobile Accs': {
+                        labels: ['Charging Docks', 'Cables', 'Cases', 'Mounts'],
+                        data: [40, 30, 20, 10]
+                    },
+                    'Smart Home': {
+                        labels: ['Plugs', 'Cameras', 'Lights', 'Sensors'],
+                        data: [60, 20, 10, 10]
+                    }
+                },
+
+                // Share of Business historical baseline comparison
+                sobCurrent: [45, 33, 22], // Shopee, Lazada, TikTok (May '26 MTD)
+                sobHistorical: [55, 30, 15], // Apr '26 Baseline
+
+                // Grand Total Platform breakdowns
+                shopeeGmvVal: 1458000,
+                lazadaGmvVal: 1069200,
+                tiktokGmvVal: 712800,
+
+                shopeeGmvValHistMoM: 1540000, // Apr '26
+                lazadaGmvValHistMoM: 840000,
+                tiktokGmvValHistMoM: 420000,
+
+                shopeeGmvValHistYoY: 1100000, // May '25
+                lazadaGmvValHistYoY: 900000,
+                tiktokGmvValHistYoY: 500000,
+
+                // Platform Traffic Clicks
+                shopeeTraffic: 42000,
+                lazadaTraffic: 31000,
+                tiktokTraffic: 21000,
+
+                shopeeTrafficMoM: 40000,
+                lazadaTrafficMoM: 28000,
+                tiktokTrafficMoM: 11000,
+
+                shopeeTrafficYoY: 38000,
+                lazadaTrafficYoY: 26000,
+                tiktokTrafficYoY: 15000,
+
+                // Orders per platform
+                shopeeOrders: 950,
+                lazadaOrders: 720,
+                tiktokOrders: 480,
+
+                shopeeOrdersMoM: 1000,
+                lazadaOrdersMoM: 600,
+                tiktokOrdersMoM: 400,
+
+                shopeeOrdersYoY: 800,
+                lazadaOrdersYoY: 650,
+                tiktokOrdersYoY: 350,
+
+                // Mechanics Compare periods
+                mechanicsCompare: {
+                    ly: [
+                        { name: "Paid Ads (CPAS/Search)", gmv: 1850000, compGmv: 1450000, spend: 410000, compSpend: 350000, roas: 4.5, compRoas: 4.14 },
+                        { name: "Livestream (Shopee/TikTok)", gmv: 580000, compGmv: 420000, spend: 75000, compSpend: 60000, roas: 7.7, compRoas: 7.0 },
+                        { name: "Affiliates & KOLs", gmv: 460000, compGmv: 350000, spend: 69000, compSpend: 50000, roas: 6.7, compRoas: 7.0 }
+                    ],
+                    mom: [
+                        { name: "Paid Ads (CPAS/Search)", gmv: 1850000, compGmv: 1750000, spend: 410000, compSpend: 390000, roas: 4.5, compRoas: 4.49 },
+                        { name: "Livestream (Shopee/TikTok)", gmv: 580000, compGmv: 550000, spend: 75000, compSpend: 72000, roas: 7.7, compRoas: 7.64 },
+                        { name: "Affiliates & KOLs", gmv: 460000, compGmv: 420000, spend: 69000, compSpend: 65000, roas: 6.7, compRoas: 6.46 }
+                    ]
+                },
+
+                // Page 3: Deep Dive Channels
+                deepDive: {
+                    ads: {
+                        impressions: "4,500,000", clicks: "185,000", conversions: "2,450",
+                        solutions: [
+                            { name: "Shopee CPAS Ads", clicks: 42000, ctr: "3.8%", cpc: "฿4.5", spend: "฿250,000", roas: "4.6x" },
+                            { name: "Lazada Sponsored Search", clicks: 31000, ctr: "3.1%", cpc: "฿5.2", spend: "฿110,000", roas: "4.1x" },
+                            { name: "TikTok Video Shopping Ads", clicks: 18450, ctr: "4.5%", cpc: "฿3.8", spend: "฿50,000", roas: "4.6x" }
+                        ]
+                    },
+                    live: {
+                        pcv: "1,800 Viewers", durationHours: 42, gmvPerHr: 13810,
+                        sessions: [
+                            { title: "Smart Home Tech Talk: Live V2", hours: 15, views: "10,200", orders: "123", gmv: 369000 },
+                            { title: "Apex Sound Premium Launch", hours: 10, views: "6,400", orders: "85", gmv: 170000 },
+                            { title: "TikTok Tech Gadgets Roundup", hours: 8, views: "4,700", orders: "21", gmv: 41000 }
+                        ],
+                        shpTrend: [35, 38, 36, 42, 58, 44, 38, 34, 35, 36, 38, 41, 46, 51, 42, 38, 36, 35, 38, 39, 41, 44, 45, 38, 35, 36, 38, 41],
+                        lzdTrend: [25, 27, 26, 31, 42, 33, 28, 25, 26, 27, 28, 31, 35, 41, 32, 28, 26, 25, 27, 28, 29, 32, 33, 28, 26, 27, 28, 31],
+                        ttTrend: [18, 19, 21, 24, 38, 29, 24, 21, 22, 23, 24, 26, 28, 35, 29, 24, 22, 21, 23, 24, 25, 29, 28, 24, 22, 21, 24, 26]
+                    },
+                    affiliate: {
+                        mega: "20%", macro: "50%", micro: "30%",
+                        creators: [
+                            { id: "@tech_unboxer_th", platform: "TikTok TH", sku: "Apex Pro Wireless ANC Headset", units: 110, gmv: 275000 },
+                            { id: "@gadget_lover_bkk", platform: "Lazada Partner", sku: "Titanium FitBand Active", units: 50, gmv: 125000 },
+                            { id: "@ios_android_geek", platform: "Shopee Network", sku: "Smart Plug PowerGrip V2", units: 30, gmv: 60000 }
+                        ]
+                    }
+                },
+
+                // Products specific inventory
+                skus: [
+                    { name: "Apex Pro Wireless ANC Headset", units: 620, gmv: 930000, traffic: 5800, orders: 600, health: "Good (45 days)", healthColor: "green", lyUnits: 500, lyGmv: 750000, lyTraffic: 4800, lyOrders: 490, momUnits: 600, momGmv: 900000, momTraffic: 5600, momOrders: 580 },
+                    { name: "Smart Plug PowerGrip V2", units: 950, gmv: 570000, traffic: 8900, orders: 920, health: "Critical (3 days)", healthColor: "red", lyUnits: 750, lyGmv: 450000, lyTraffic: 7100, lyOrders: 720, momUnits: 920, momGmv: 552000, momTraffic: 8600, momOrders: 890 },
+                    { name: "Titanium FitBand Active", units: 410, gmv: 1025000, traffic: 4100, orders: 400, health: "Good (18 days)", healthColor: "green", lyUnits: 300, lyGmv: 750000, lyTraffic: 3100, lyOrders: 290, momUnits: 390, momGmv: 975000, momTraffic: 3900, momOrders: 380 },
+                    { name: "Qi2 Magnetic Charging Dock", units: 170, gmv: 715000, traffic: 3200, orders: 165, health: "Low (9 days)", healthColor: "yellow", lyUnits: 120, lyGmv: 504000, lyTraffic: 2200, lyOrders: 115, momUnits: 160, momGmv: 672000, momTraffic: 3000, momOrders: 155 }
+                ],
+
+                // Discrete full month daily actuals & daily targets
+                dailyActuals: [88, 92, 91, 105, 140, 115, 96, 94, 98, 95, 96, 99, 112, 138, 118, 102, 94, 95, 98, 104, 106, 128, 115, 102, 98, 95, 102, 109, null, null, null],
+                dailyTargets: [90, 90, 90, 90, 120, 100, 95, 95, 95, 95, 95, 95, 95, 120, 100, 95, 95, 95, 95, 95, 95, 110, 100, 95, 95, 95, 95, 95, 95, 95, 95]
+            }
+        };
+
+        // UI state variables
+        let yoyGrowthChartInst = null;
+        let dailyVelocityChartInst = null;
+        let platformShareChartInst = null;
+        let categoryChartInst = null;
+        let liveGMVTrendChartInst = null;
+        let currentDrillCategory = null;
+
+        // Close Summary Panels
+        function closeSummaryBox(boxId) {
+            const box = document.getElementById(boxId);
+            if (box) box.classList.add('hidden');
+        }
+
+        // Feature 1: Executive Overview Report Generator (Page 1)
+        async function generateOverviewSummary() {
+            const selector = document.getElementById('brandSelector');
+            if (!selector) return;
+            const currentBrand = selector.value;
+            const data = dataStore[currentBrand];
+            const summaryBox = document.getElementById('overviewSummaryBox');
+            const summaryText = document.getElementById('overviewSummaryText');
+
+            if (summaryBox) summaryBox.classList.remove('hidden');
+            if (summaryText) summaryText.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-circle-notch animate-spin text-brand"></i> Compiling performance data and historical run rates...</div>`;
+
+            const systemPrompt = `You are a world-class senior e-commerce enabler operating in Thailand. 
+Your audience is the Brand Director. Present a concise executive summary outlining the monthly target progression, the current pacing status, and YoY actual performance gains.
+Mention local platforms (Shopee, Lazada, TikTok Shop) and give actionable advice. Keep it under 200 words.`;
+
+            const userPrompt = `Operational metrics:
+- Brand Name: ${currentBrand === 'cosmetics' ? 'Acme Cosmetics TH' : 'TechGear Plus'}
+- GMV Achieved: ${data.gmv} (Target: ${data.gmvTarget}, Pacing: ${data.gmvPct})
+- Orders: ${data.orders} (Target: ${data.ordersTarget})
+- AOV: ${data.aov}
+- CR%: ${data.cr}`;
+
+            const response = await callGemini(systemPrompt, userPrompt);
+            if (summaryText) summaryText.innerHTML = response.replace(/\n/g, "<br>");
+        }
+
+        // Feature 2: Growth Campaign Mechanic Optimizer MTD (Page 2)
+        async function generateMechanicsOptimization() {
+            const selector = document.getElementById('brandSelector');
+            if (!selector) return;
+            const currentBrand = selector.value;
+            const data = dataStore[currentBrand];
+            const summaryBox = document.getElementById('mechanicsSummaryBox');
+            const summaryText = document.getElementById('mechanicsSummaryText');
+
+            if (summaryBox) summaryBox.classList.remove('hidden');
+            if (summaryText) summaryText.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-circle-notch animate-spin text-violet-600"></i> Calculating campaign ROAS and Cost-to-Income (CIR%) ratios...</div>`;
+
+            const systemPrompt = `You are a Senior E-Commerce Growth Architect. Recommend three immediate optimizations to minimize the Cost-to-Income Ratio (CIR%) and improve ROAS/ROI across the channels (CPAS, Livestream, Affiliates) in Thailand. Keep it under 200 words.`;
+
+            const userPrompt = `Marketing performance:
+- Ads Spend: ${data.adsSpend} for ${data.adsGmv} (${data.adsRoas})
+- Live Views: ${data.liveViews} views, GMV: ${data.liveGmv} (${data.liveSessions})
+- Affiliates: ${data.affCreators} KOLs, GMV: ${data.affGmv} (${data.affComm})`;
+
+            const response = await callGemini(systemPrompt, userPrompt);
+            if (summaryText) summaryText.innerHTML = response.replace(/\n/g, "<br>");
+        }
+
+        // Feature 3: Deep-Dive Budget Audit Assistant (Page 3)
+        async function auditChannelBudgets() {
+            const selector = document.getElementById('brandSelector');
+            if (!selector) return;
+            const currentBrand = selector.value;
+            const data = dataStore[currentBrand];
+            const summaryBox = document.getElementById('deepDiveSummaryBox');
+            const summaryText = document.getElementById('deepDiveSummaryText');
+
+            if (summaryBox) summaryBox.classList.remove('hidden');
+            if (summaryText) summaryText.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-circle-notch animate-spin text-emerald-600"></i> Running media spend rebalancing analysis...</div>`;
+
+            const systemPrompt = `You are a Senior Media Director. Recommend a concrete budget shift strategy between Paid Ads, Livestreams (Hours and GMV metrics), and creator affiliates to achieve maximum blended productivity. Under 200 words.`;
+
+            const userPrompt = `Channel metrics:
+- Paid Ads CPC clicks: ${data.deepDive.ads.solutions.map(s=>`${s.name}: ${s.clicks} clicks, spend ${s.spend}, ROAS ${s.roas}`).join(" | ")}
+- Live Hours & GMV: Duration ${data.deepDive.live.durationHours} hours, GMV per Hour: ฿${data.deepDive.live.gmvPerHr}
+- Affiliate KOL Share: Mega/Macro/Micro split: ${data.deepDive.affiliate.mega}/${data.deepDive.affiliate.macro}/${data.deepDive.affiliate.micro}`;
+
+            const response = await callGemini(systemPrompt, userPrompt);
+            if (summaryText) summaryText.innerHTML = response.replace(/\n/g, "<br>");
+        }
+
+        // Feature 4: Inventory Safeguard Planner (Page 4)
+        async function generateInventoryPlan() {
+            const selector = document.getElementById('brandSelector');
+            if (!selector) return;
+            const currentBrand = selector.value;
+            const data = dataStore[currentBrand];
+            const summaryBox = document.getElementById('productsSummaryBox');
+            const summaryText = document.getElementById('productsSummaryText');
+
+            if (summaryBox) summaryBox.classList.remove('hidden');
+            if (summaryText) summaryText.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-circle-notch animate-spin text-amber-600"></i> Calculating stockout velocity and restocking timelines...</div>`;
+
+            const highRiskSku = data.skus.find(sku => sku.healthColor === 'red');
+
+            const systemPrompt = `You are an E-Commerce supply chain expert. Give an urgent stockout mitigation playbook for high-risk SKUs and draft a quick supplier reorder notice. Under 200 words.`;
+
+            const userPrompt = `Stock Alert:
+- SKU name: ${highRiskSku.name}
+- Runway Status: ${highRiskSku.health}
+- Sales units sold: ${highRiskSku.units}`;
+
+            const response = await callGemini(systemPrompt, userPrompt);
+            if (summaryText) summaryText.innerHTML = response.replace(/\n/g, "<br>");
+        }
+
+        // Page Switcher
+        function switchPage(pageId, navElement) {
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.page-content').forEach(el => el.classList.remove('block'));
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                targetPage.classList.add('block');
+            }
+
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('active', 'bg-brand', 'text-white');
+                el.classList.add('text-slate-300');
+            });
+            navElement.classList.add('active', 'bg-brand', 'text-white');
+            navElement.classList.remove('text-slate-300', 'hover:bg-slate-800');
+            
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        // Sub-Tab Switcher for Channel Deep-Dive
+        function switchDeepDiveTab(panelId, element) {
+            document.querySelectorAll('.deep-dive-panel').forEach(panel => panel.classList.add('hidden'));
+            document.querySelectorAll('.deep-dive-panel').forEach(panel => panel.classList.remove('block'));
+
+            const targetPanel = document.getElementById(panelId);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+                targetPanel.classList.add('block');
+            }
+
+            document.querySelectorAll('.sub-tab').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Category drill-down interactive control
+        function handleCategoryChartClick(event, activeElements) {
+            if (!activeElements || activeElements.length === 0) return;
+            
+            const selector = document.getElementById('brandSelector');
+            if (!selector) return;
+            const currentBrand = selector.value;
+            const data = dataStore[currentBrand];
+
+            const clickedIndex = activeElements[0].index;
+            const clickedCategory = categoryChartInst.data.labels[clickedIndex];
+
+            // If L1 category clicked has sub-category data, drill down
+            if (data.categoryL2 && data.categoryL2[clickedCategory]) {
+                currentDrillCategory = clickedCategory;
+                
+                // Show reset button
+                const resetBtn = document.getElementById('categoryResetBtn');
+                if (resetBtn) resetBtn.classList.remove('hidden');
+
+                // Update chart config
+                categoryChartInst.data.labels = data.categoryL2[clickedCategory].labels;
+                categoryChartInst.data.datasets[0].data = data.categoryL2[clickedCategory].data;
+                categoryChartInst.data.datasets[0].label = `${clickedCategory} Sub-categories (L2)`;
+                categoryChartInst.update();
+            }
+        }
+
+        function resetCategoryDrill() {
+            currentDrillCategory = null;
+            const resetBtn = document.getElementById('categoryResetBtn');
+            if (resetBtn) resetBtn.classList.add('hidden');
+
+            const selector = document.getElementById('brandSelector');
+            if (!selector) return;
+            const currentBrand = selector.value;
+            const data = dataStore[currentBrand];
+
+            if (categoryChartInst) {
+                categoryChartInst.data.labels = data.categoryLabels;
+                categoryChartInst.data.datasets[0].data = data.categoryData;
+                categoryChartInst.data.datasets[0].label = 'L1 Categories';
+                categoryChartInst.update();
+            }
+        }
+
+        // Update SOB (Share of Business) chart & table metrics on filter change
+        function updateSOBTimeframe() {
+            const timeframeSelector = document.getElementById('sobTimeframeSelector');
+            const brandSelector = document.getElementById('brandSelector');
+            if (!timeframeSelector || !brandSelector) return;
+
+            const selectedTimeframe = timeframeSelector.value;
+            const currentBrand = brandSelector.value;
+            const data = dataStore[currentBrand];
+
+            let dataset = [];
+            if (selectedTimeframe === 'current') {
+                dataset = data.sobCurrent;
+            } else {
+                dataset = data.sobHistorical;
+            }
+
+            if (platformShareChartInst) {
+                platformShareChartInst.data.datasets[0].data = dataset;
+                platformShareChartInst.update();
+            }
+        }
+
+        // 1.1 & 1.3: Dynamic platform table breakdown with YoY/MoM % comparison
+        function updatePlatformTable() {
+            const brandSelector = document.getElementById('brandSelector');
+            const periodSelector = document.getElementById('tablePeriodSelector');
+            const tbody = document.getElementById('platform-breakdown-tbody');
+            const compHeader = document.getElementById('table-comp-period-header');
+
+            if (!brandSelector || !periodSelector || !tbody) return;
+
+            const currentBrand = brandSelector.value;
+            const selectedPeriod = periodSelector.value;
+            const data = dataStore[currentBrand];
+
+            if (selectedPeriod === 'mom') {
+                if (compHeader) compHeader.innerText = "Comp. GMV (Apr-'26)";
+            } else {
+                if (compHeader) compHeader.innerText = "Comp. GMV (May-'25)";
+            }
+
+            const platforms = [
+                { id: "shopee", name: "Shopee TH", currentGmv: data.shopeeGmvVal, currentTraffic: data.shopeeTraffic, orders: data.shopeeOrders },
+                { id: "lazada", name: "Lazada TH", currentGmv: data.lazadaGmvVal, currentTraffic: data.lazadaTraffic, orders: data.lazadaOrders },
+                { id: "tiktok", name: "TikTok Shop TH", currentGmv: data.tiktokGmvVal, currentTraffic: data.tiktokTraffic, orders: data.tiktokOrders }
+            ];
+
+            tbody.innerHTML = '';
+
+            let totalCurrentGmv = 0;
+            let totalCompGmv = 0;
+            let totalTraffic = 0;
+            let totalCompTraffic = 0;
+            let totalOrders = 0;
+            let totalCompOrders = 0;
+
+            platforms.forEach(platform => {
+                let compGmv = 0;
+                let compTraffic = 0;
+                let compOrders = 0;
+
+                if (selectedPeriod === 'mom') {
+                    compGmv = platform.id === 'shopee' ? data.shopeeGmvValHistMoM :
+                              platform.id === 'lazada' ? data.lazadaGmvValHistMoM : data.tiktokGmvValHistMoM;
+                    compTraffic = platform.id === 'shopee' ? data.shopeeTrafficMoM :
+                                  platform.id === 'lazada' ? data.lazadaTrafficMoM : data.tiktokTrafficMoM;
+                    compOrders = platform.id === 'shopee' ? data.shopeeOrdersMoM :
+                                 platform.id === 'lazada' ? data.lazadaOrdersMoM : data.tiktokOrdersMoM;
+                } else {
+                    compGmv = platform.id === 'shopee' ? data.shopeeGmvValHistYoY :
+                              platform.id === 'lazada' ? data.lazadaGmvValHistYoY : data.tiktokGmvValHistYoY;
+                    compTraffic = platform.id === 'shopee' ? data.shopeeTrafficYoY :
+                                  platform.id === 'lazada' ? data.lazadaTrafficYoY : data.tiktokTrafficYoY;
+                    compOrders = platform.id === 'shopee' ? data.shopeeOrdersYoY :
+                                 platform.id === 'lazada' ? data.lazadaOrdersYoY : data.tiktokOrdersYoY;
+                }
+
+                totalCurrentGmv += platform.currentGmv;
+                totalCompGmv += compGmv;
+                totalTraffic += platform.currentTraffic;
+                totalCompTraffic += compTraffic;
+                totalOrders += platform.orders;
+                totalCompOrders += compOrders;
+
+                const gmvGrowthPct = ((platform.currentGmv - compGmv) / compGmv) * 100;
+                const trafficGrowthPct = ((platform.currentTraffic - compTraffic) / compTraffic) * 100;
+                const ordersGrowthPct = ((platform.orders - compOrders) / compOrders) * 100;
+                
+                const currentAov = platform.currentGmv / platform.orders;
+                const compAov = compGmv / compOrders;
+                const aovGrowthPct = ((currentAov - compAov) / compAov) * 100;
+
+                const getBadge = (pct) => {
+                    const sign = pct >= 0 ? "+" : "";
+                    const badgeBg = pct >= 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700";
+                    return `<span class="inline-block px-1.5 py-0.5 rounded text-[11px] ${badgeBg}">${sign}${pct.toFixed(1)}%</span>`;
+                };
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 text-sm">
+                        <td class="py-3 px-2 font-semibold text-slate-800">${platform.name}</td>
+                        <td class="py-3 px-2 text-right">
+                            <span class="block font-bold text-slate-900">${formatTHB(platform.currentGmv)}</span>
+                            <span class="block text-xs text-slate-400">vs ${formatTHB(compGmv)}</span>
+                        </td>
+                        <td class="py-3 px-2 text-center">${getBadge(gmvGrowthPct)}</td>
+                        <td class="py-3 px-2 text-right">
+                            <span class="block text-slate-700 font-medium">${platform.currentTraffic.toLocaleString()}</span>
+                            <span class="block text-[11px]">${getBadge(trafficGrowthPct)}</span>
+                        </td>
+                        <td class="py-3 px-2 text-right">
+                            <span class="block text-slate-700 font-medium">${platform.orders.toLocaleString()}</span>
+                            <span class="block text-[11px]">${getBadge(ordersGrowthPct)}</span>
+                        </td>
+                        <td class="py-3 px-2 text-right">
+                            <span class="block text-slate-700 font-medium">${formatTHB(Math.round(currentAov))}</span>
+                            <span class="block text-[11px]">${getBadge(aovGrowthPct)}</span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Blended Grand Totals
+            const totalGmvGrowthPct = ((totalCurrentGmv - totalCompGmv) / totalCompGmv) * 100;
+            const totalTrafficGrowthPct = ((totalCurrentGmv - totalCompTraffic) / totalCompTraffic) * 100;
+            const totalOrdersGrowthPct = ((totalOrders - totalCompOrders) / totalCompOrders) * 100;
+            const blendedCurrentAov = totalCurrentGmv / totalOrders;
+            const blendedCompAov = totalCompGmv / totalCompOrders;
+            const totalAovGrowthPct = ((blendedCurrentAov - blendedCompAov) / blendedCompAov) * 100;
+
+            const getGrandBadge = (pct) => {
+                const sign = pct >= 0 ? "+" : "";
+                const badgeBg = pct >= 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
+                return `<span class="inline-block px-2 py-0.5 rounded text-xs ${badgeBg} font-bold">${sign}${pct.toFixed(1)}%</span>`;
+            };
+
+            tbody.innerHTML += `
+                <tr class="bg-slate-50 font-bold text-slate-900 border-t-2 border-slate-200">
+                    <td class="py-4 px-2 text-slate-800">Grand Total</td>
+                    <td class="py-4 px-2 text-right text-brand font-bold">
+                        <span>${formatTHB(totalCurrentGmv)}</span>
+                        <span class="block text-xs font-normal text-slate-400">vs ${formatTHB(totalCompGmv)}</span>
+                    </td>
+                    <td class="py-4 px-2 text-center">${getGrandBadge(totalGmvGrowthPct)}</td>
+                    <td class="py-4 px-2 text-right">
+                        <span>${totalTraffic.toLocaleString()}</span>
+                        <span class="block">${getGrandBadge(totalTrafficGrowthPct)}</span>
+                    </td>
+                    <td class="py-4 px-2 text-right">
+                        <span>${totalOrders.toLocaleString()}</span>
+                        <span class="block">${getGrandBadge(totalOrdersGrowthPct)}</span>
+                    </td>
+                    <td class="py-4 px-2 text-right">
+                        <span>${formatTHB(Math.round(blendedCurrentAov))}</span>
+                        <span class="block">${getGrandBadge(totalAovGrowthPct)}</span>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Page 2: Update campaign mechanics metrics with comparison timeframe filters + CIR%
+        function updateMechanicsData() {
+            const brandSelector = document.getElementById('brandSelector');
+            const periodSelector = document.getElementById('mechanicsPeriodSelector');
+            const tbody = document.getElementById('mechanics-comparison-tbody');
+            const compBadge = document.getElementById('mechanics-table-comp-badge');
+
+            if (!brandSelector || !periodSelector || !tbody) return;
+
+            const currentBrand = brandSelector.value;
+            const selectedPeriod = periodSelector.value;
+            const data = dataStore[currentBrand];
+
+            const compareData = data.mechanicsCompare[selectedPeriod];
+            if (compBadge) compBadge.innerText = selectedPeriod === 'ly' ? "vs May-'25 Same Period (YoY)" : "vs Apr-'26 Baseline (MoM)";
+
+            tbody.innerHTML = '';
+            let totalSpend = 0;
+            let totalGmv = 0;
+
+            compareData.forEach(row => {
+                totalSpend += row.spend;
+                totalGmv += row.gmv;
+
+                const cir = (row.spend / row.gmv) * 100;
+                const compCir = (row.compSpend / row.compGmv) * 100;
+                const cirDiff = cir - compCir;
+                const cirSign = cirDiff >= 0 ? "+" : "";
+                const cirColor = cirDiff <= 0 ? "text-green-600" : "text-red-500"; // lower is better for CIR%
+
+                const roasDiff = row.roas - row.compRoas;
+                const roasSign = roasDiff >= 0 ? "+" : "";
+                const roasColor = roasDiff >= 0 ? "text-green-600" : "text-red-500";
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors text-sm">
+                        <td class="py-3.5 px-6 font-semibold text-slate-800">${row.name}</td>
+                        <td class="py-3.5 px-6 text-right">
+                            <span class="block font-bold text-slate-900">${formatTHB(row.gmv)}</span>
+                            <span class="block text-xs text-slate-400">vs ${formatTHB(row.compGmv)}</span>
+                        </td>
+                        <td class="py-3.5 px-6 text-right">
+                            <span class="block font-bold text-slate-900">${formatTHB(row.spend)}</span>
+                            <span class="block text-xs text-slate-400">vs ${formatTHB(row.compSpend)}</span>
+                        </td>
+                        <td class="py-3.5 px-6 text-right">
+                            <span class="block font-bold text-brand">${row.roas.toFixed(2)}x</span>
+                            <span class="block text-xs ${roasColor}">${roasSign}${roasDiff.toFixed(2)}x</span>
+                        </td>
+                        <td class="py-3.5 px-6 text-right">
+                            <span class="block font-bold text-indigo-750">${cir.toFixed(1)}%</span>
+                            <span class="block text-xs ${cirColor}">${cirSign}${cirDiff.toFixed(1)}%</span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Update blended CIR card value
+            const blendedCir = (totalSpend / totalGmv) * 100;
+            const cirEl = document.getElementById('mechanic-blended-cir');
+            if (cirEl) cirEl.innerText = blendedCir.toFixed(1) + "%";
+        }
+
+        // Page 4: SKU performance historical comparison table builder with multi-metric variance
+        function updateProductPerformanceTable() {
+            const brandSelector = document.getElementById('brandSelector');
+            const periodSelector = document.getElementById('productTablePeriodSelector');
+            const tbody = document.getElementById('product-performance-tbody');
+
+            if (!brandSelector || !periodSelector || !tbody) return;
+
+            const currentBrand = brandSelector.value;
+            const selectedPeriod = periodSelector.value;
+            const data = dataStore[currentBrand];
+
+            tbody.innerHTML = '';
+
+            data.skus.forEach(sku => {
+                let compUnits = selectedPeriod === 'ly' ? sku.lyUnits : sku.momUnits;
+                let compGmv = selectedPeriod === 'ly' ? sku.lyGmv : sku.momGmv;
+                let compTraffic = selectedPeriod === 'ly' ? sku.lyTraffic : sku.momTraffic;
+                let compOrders = selectedPeriod === 'ly' ? sku.lyOrders : sku.momOrders;
+
+                const unitsPct = ((sku.units - compUnits) / compUnits) * 100;
+                const gmvPct = ((sku.gmv - compGmv) / compGmv) * 100;
+                const trafficPct = ((sku.traffic - compTraffic) / compTraffic) * 100;
+                const ordersPct = ((sku.orders - compOrders) / compOrders) * 100;
+
+                const currentAsp = sku.gmv / sku.units;
+                const compAsp = compGmv / compUnits;
+                const aspPct = ((currentAsp - compAsp) / compAsp) * 100;
+
+                const getBadge = (pct) => {
+                    const sign = pct >= 0 ? "+" : "";
+                    const badgeBg = pct >= 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700";
+                    return `<span class="inline-block px-1 py-0.5 rounded text-[10px] ${badgeBg} ml-1 font-semibold">${sign}${pct.toFixed(0)}%</span>`;
+                };
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors text-xs">
+                        <td class="py-3 px-4 font-bold text-slate-800">${sku.name}</td>
+                        <td class="py-3 px-2 text-right font-medium">
+                            <span class="block">${sku.units.toLocaleString()}</span>
+                            <span class="block text-[10px] text-slate-400">vs ${compUnits.toLocaleString()}</span>
+                            ${getBadge(unitsPct)}
+                        </td>
+                        <td class="py-3 px-2 text-right font-medium">
+                            <span class="block">${formatTHB(sku.gmv)}</span>
+                            <span class="block text-[10px] text-slate-400">vs ${formatTHB(compGmv)}</span>
+                            ${getBadge(gmvPct)}
+                        </td>
+                        <td class="py-3 px-2 text-right font-medium">
+                            <span class="block">${sku.traffic.toLocaleString()}</span>
+                            <span class="block text-[10px] text-slate-400">vs ${compTraffic.toLocaleString()}</span>
+                            ${getBadge(trafficPct)}
+                        </td>
+                        <td class="py-3 px-2 text-right font-medium">
+                            <span class="block">${sku.orders.toLocaleString()}</span>
+                            <span class="block text-[10px] text-slate-400">vs ${compOrders.toLocaleString()}</span>
+                            ${getBadge(ordersPct)}
+                        </td>
+                        <td class="py-3 px-4 text-right font-medium">
+                            <span class="block">${formatTHB(Math.round(currentAsp))}</span>
+                            <span class="block text-[10px] text-slate-400">vs ${formatTHB(Math.round(compAsp))}</span>
+                            ${getBadge(aspPct)}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Global dataset updates when switcher triggers
+        function updateBrandData() {
+            const selector = document.getElementById('brandSelector');
+            if (!selector) return;
+            const brand = selector.value;
+            const data = dataStore[brand];
+            if (!data) return;
+
+            // Helper functions to update card metric comparison displays
+            const setSafeText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
+            };
+            const setSafeWidth = (id, width) => {
+                const el = document.getElementById(id);
+                if (el) el.style.width = width;
+            };
+            const setSafeHTML = (id, html) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = html;
+            };
+
+            const periodSelector = document.getElementById('pacingComparisonSelector');
+            const compPeriod = periodSelector ? periodSelector.value : 'ly';
+
+            // Calculate percentage pacing compared to historical framework values
+            let gmvDiff = 0, orderDiff = 0, aovDiff = 0, crDiff = 0;
+            if (compPeriod === 'ly') {
+                gmvDiff = ((data.currentSalesVal - data.lySalesVal) / data.lySalesVal) * 100;
+                orderDiff = ((data.currentOrdersVal - data.lyOrdersVal) / data.lyOrdersVal) * 100;
+                aovDiff = ((data.currentAovVal - data.lyAovVal) / data.lyAovVal) * 100;
+                crDiff = data.currentCrVal - data.lyCrVal;
+            } else {
+                gmvDiff = ((data.currentSalesVal - data.momSalesVal) / data.momSalesVal) * 100;
+                orderDiff = ((data.currentOrdersVal - data.momOrdersVal) / data.momOrdersVal) * 100;
+                aovDiff = ((data.currentAovVal - data.momAovVal) / data.momAovVal) * 100;
+                crDiff = data.currentCrVal - data.momCrVal;
+            }
+
+            const getFormatSign = (val) => val >= 0 ? "+" : "";
+            const getFormatColor = (val) => val >= 0 ? "text-green-600" : "text-red-500";
+
+            // Card 1
+            setSafeText('card-gmv', formatTHB(data.currentSalesVal));
+            setSafeHTML('card-gmv-pct', `<span class="${getFormatColor(gmvDiff)} font-bold">${getFormatSign(gmvDiff)}${gmvDiff.toFixed(1)}%</span>`);
+            
+            // Card 2
+            setSafeText('card-orders', data.currentOrdersVal.toLocaleString());
+            setSafeHTML('card-orders-pct', `<span class="${getFormatColor(orderDiff)} font-bold">${getFormatSign(orderDiff)}${orderDiff.toFixed(1)}%</span>`);
+
+            // Card 3
+            setSafeText('card-aov', formatTHB(data.currentAovVal));
+            setSafeHTML('card-aov-pct', `<span class="${getFormatColor(aovDiff)} font-bold">${getFormatSign(aovDiff)}${aovDiff.toFixed(1)}%</span>`);
+
+            // Card 4
+            setSafeText('card-cr', data.currentCrVal.toFixed(2) + "%");
+            setSafeHTML('card-cr-pct', `<span class="${getFormatColor(crDiff)} font-bold">${getFormatSign(crDiff)}${crDiff.toFixed(2)}%</span>`);
+
+            // Card 5: GMV vs Target
+            const targetPct = (data.currentSalesVal / data.targetSalesVal) * 100;
+            setSafeText('card-target-gap', targetPct.toFixed(1) + "% Achieved");
+            setSafeWidth('card-target-bar', Math.min(targetPct, 100) + "%");
+            const gapRemaining = data.targetSalesVal - data.currentSalesVal;
+            setSafeText('card-target-text', gapRemaining > 0 ? `Target Gap: ${formatTHB(gapRemaining)}` : "Goal Achieved! 🎉");
+
+            // Daily run rate cards MTD
+            setSafeText('runrate-pct-score', data.achievementPct);
+            setSafeText('runrate-rem-score', data.gapTarget);
+            setSafeText('runrate-daily-req', data.dailyVelocityRequired);
+
+            // Update sub-pages
+            updateSOBTimeframe();
+            updatePlatformTable();
+            updateMechanicsData();
+            updateProductPerformanceTable();
+
+            // Page 3: Deep Dive Channels
+            setSafeText('ads-funnel-imp', data.deepDive.ads.impressions);
+            setSafeText('ads-funnel-click', data.deepDive.ads.clicks);
+            setSafeText('ads-funnel-conv', data.deepDive.ads.conversions);
+
+            // Inject Ads Solutions click breakdowns
+            const adsRows = document.getElementById('ads-breakdown-rows');
+            if (adsRows) {
+                adsRows.innerHTML = '';
+                data.deepDive.ads.solutions.forEach(s => {
+                    adsRows.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-slate-800">${s.name}</td>
+                            <td class="px-4 py-4 text-right font-bold text-slate-900">${s.clicks.toLocaleString()}</td>
+                            <td class="px-4 py-4 text-right text-slate-600">${s.ctr}</td>
+                            <td class="px-4 py-4 text-right text-slate-600">${s.cpc}</td>
+                            <td class="px-4 py-4 text-right text-slate-600">${s.spend}</td>
+                            <td class="px-4 py-4 text-right font-bold text-brand">${s.roas}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Livestream Analysis deep-dives
+            setSafeText('live-pcv', data.deepDive.live.pcv);
+            setSafeText('live-hours', data.deepDive.live.durationHours + " Hours");
+            setSafeText('live-gmv-per-hr', formatTHB(data.deepDive.live.gmvPerHr) + " / Hr");
+
+            const liveRows = document.getElementById('live-sessions-rows');
+            if (liveRows) {
+                liveRows.innerHTML = '';
+                data.deepDive.live.sessions.forEach(s => {
+                    liveRows.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-slate-800">${s.title}</td>
+                            <td class="px-4 py-4 text-right">${s.hours} Hrs</td>
+                            <td class="px-4 py-4 text-right">${s.views}</td>
+                            <td class="px-4 py-4 text-right">${s.orders}</td>
+                            <td class="px-6 py-4 text-right font-bold text-brand">${formatTHB(Math.round(s.gmv / s.hours))}/Hr</td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-900">${formatTHB(s.gmv)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Affiliate Lead Board Metrics
+            const affRows = document.getElementById('affiliate-leader-rows');
+            if (affRows) {
+                affRows.innerHTML = '';
+                data.deepDive.affiliate.creators.forEach(c => {
+                    let badgeClass = "bg-rose-100 text-rose-700 font-semibold";
+                    if (c.platform.includes("Lazada")) badgeClass = "bg-blue-100 text-blue-800 font-semibold";
+                    if (c.platform.includes("Shopee")) badgeClass = "bg-orange-100 text-orange-700 font-semibold";
+
+                    affRows.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-slate-800">${c.id}</td>
+                            <td class="px-4 py-4 text-center"><span class="px-2 py-1 rounded text-xs ${badgeClass}">${c.platform}</span></td>
+                            <td class="px-4 py-4 text-slate-600 font-medium">${c.sku}</td>
+                            <td class="px-4 py-4 text-right text-slate-600">${c.units.toLocaleString()}</td>
+                            <td class="px-6 py-4 text-right font-bold text-brand">${formatTHB(c.gmv)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Page 4: Top Moving SKUs Cover Days rendering
+            const skuTableBody = document.getElementById('top-skus-body');
+            if (skuTableBody) {
+                skuTableBody.innerHTML = '';
+                data.skus.forEach(sku => {
+                    let badgeClass = "bg-green-100 text-green-700";
+                    if(sku.healthColor === "red") badgeClass = "bg-red-100 text-red-700 animate-pulse";
+                    if(sku.healthColor === "yellow") badgeClass = "bg-yellow-100 text-yellow-700";
+
+                    skuTableBody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-3 font-medium text-slate-800">${sku.name}</td>
+                            <td class="px-4 py-3 text-right">${sku.units}</td>
+                            <td class="px-4 py-3 text-right">${formatTHB(sku.gmv)}</td>
+                            <td class="px-6 py-3 text-center">
+                                <span class="px-2.5 py-1 rounded text-xs font-bold ${badgeClass}">
+                                    ${sku.health}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Reset dynamic Category drills back to L1
+            resetCategoryDrill();
+
+            // Update charts with brand contextual configurations
+            if (yoyGrowthChartInst) {
+                const multi = brand === 'tech' ? 2.2 : 1.0;
+                // Historical monthly Actual trends (Jan to Dec)
+                const baseLine2025 = [80, 85, 90, 95, 115, 105, 100, 95, 110, 115, 120, 140].map(v => Math.round(v * 10000 * multi));
+                const baseLine2026 = [105, 110, 112, 135, 142.5, null, null, null, null, null, null, null].map(v => v ? Math.round(v * 10000 * multi) : null);
+                
+                // Calculate YoY Growth Rates
+                const yoyRates = [31.2, 29.4, 24.4, 42.1, 23.9, 0, 0, 0, 0, 0, 0, 0];
+
+                yoyGrowthChartInst.data.datasets[0].data = baseLine2025;
+                yoyGrowthChartInst.data.datasets[1].data = baseLine2026;
+                yoyGrowthChartInst.data.datasets[2].data = yoyRates;
+                yoyGrowthChartInst.update();
+            }
+
+            // Update Discrete Daily Chart
+            if (dailyVelocityChartInst) {
+                dailyVelocityChartInst.data.datasets[0].data = data.dailyActuals;
+                dailyVelocityChartInst.data.datasets[1].data = data.dailyTargets;
+                dailyVelocityChartInst.update();
+            }
+
+            // Update Daily Live Trend Chart (Shopee, Lazada, TikTok Live)
+            if (liveGMVTrendChartInst) {
+                liveGMVTrendChartInst.data.datasets[0].data = data.deepDive.live.shpTrend;
+                liveGMVTrendChartInst.data.datasets[1].data = data.deepDive.live.lzdTrend;
+                liveGMVTrendChartInst.data.datasets[2].data = data.deepDive.live.ttTrend;
+                liveGMVTrendChartInst.update();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            const daysArray = Array.from({length: 31}, (_, i) => `Day ${i+1}`);
+            const monthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            // Initialize YoY Growth Comparison Chart (Jan to Dec actuals + YoY line)
+            const ctxYoY = document.getElementById('yoyGrowthChart');
+            if (ctxYoY) {
+                yoyGrowthChartInst = new Chart(ctxYoY.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: monthsArray,
+                        datasets: [
+                            {
+                                label: "Actual Sales (May-'25) [THB]",
+                                data: [],
+                                backgroundColor: '#94a3b8',
+                                borderRadius: 4,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: "Actual Sales (May-'26) [THB]",
+                                data: [],
+                                backgroundColor: '#3b82f6',
+                                borderRadius: 4,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: "YoY % Change",
+                                data: [],
+                                type: 'line',
+                                borderColor: '#e11d48',
+                                backgroundColor: '#e11d48',
+                                borderWidth: 2,
+                                yAxisID: 'y1',
+                                fill: false,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        if (context.datasetIndex === 2) {
+                                            return context.dataset.label + ': ' + context.raw.toFixed(1) + '%';
+                                        }
+                                        return context.dataset.label + ': ฿' + context.raw.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [4, 4] },
+                                ticks: { callback: value => '฿' + (value / 1000).toLocaleString() + 'k' },
+                                position: 'left'
+                            },
+                            y1: {
+                                beginAtZero: true,
+                                position: 'right',
+                                grid: { drawOnChartArea: false },
+                                ticks: { callback: value => value + '%' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Initialize Daily Velocity (Actual vs Target) Non-cumulative Chart
+            const ctxDailyVelocity = document.getElementById('dailyVelocityChart');
+            if (ctxDailyVelocity) {
+                dailyVelocityChartInst = new Chart(ctxDailyVelocity.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: daysArray,
+                        datasets: [
+                            {
+                                label: 'Daily Actual GMV (THB)',
+                                data: [],
+                                backgroundColor: '#3b82f6',
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Daily Target GMV (THB)',
+                                data: [],
+                                type: 'line',
+                                borderColor: '#e11d48',
+                                borderWidth: 2.5,
+                                borderDash: [2, 2],
+                                fill: false,
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        if (context.raw === null) return context.dataset.label + ': Pending';
+                                        return context.dataset.label + ': ฿' + (context.raw * 1000).toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [4, 4] },
+                                ticks: { callback: value => '฿' + value.toLocaleString() + 'k' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Initialize Platform Share Doughnut (Overview Page) with filter-ready bindings
+            const ctxShare = document.getElementById('platformShareChart');
+            if (ctxShare) {
+                platformShareChartInst = new Chart(ctxShare.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Shopee', 'Lazada', 'TikTok Shop'],
+                        datasets: [{
+                            data: [42, 35, 23],
+                            backgroundColor: ['#ee4d2d', '#0f146d', '#000000'],
+                            borderWidth: 0, hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '70%',
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+
+            // Initialize Category GMV Chart (Product Page) with drill-down hook
+            const ctxCat = document.getElementById('categoryChart');
+            if (ctxCat) {
+                categoryChartInst = new Chart(ctxCat.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'L1 Categories',
+                            data: [],
+                            backgroundColor: ['#3b82f6', '#ec4899', '#8b5cf6', '#94a3b8'],
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Horizontal bar chart
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { x: { display: false }, y: { grid: { display: false } } },
+                        onClick: handleCategoryChartClick
+                    }
+                });
+            }
+
+            // Initialize Page 3: Livestream Daily GMV Trend Chart (3 distinct platform lines)
+            const ctxLiveGMV = document.getElementById('liveGMVTrendChart');
+            if (ctxLiveGMV) {
+                const trendDays = Array.from({length: 28}, (_, i) => `${i+1}`);
+                liveGMVTrendChartInst = new Chart(ctxLiveGMV.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: trendDays,
+                        datasets: [
+                            {
+                                label: 'Shopee Live GMV',
+                                data: [],
+                                borderColor: '#ee4d2d',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: false
+                            },
+                            {
+                                label: 'Lazada Live GMV',
+                                data: [],
+                                borderColor: '#0f146d',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: false
+                            },
+                            {
+                                label: 'TikTok Live GMV',
+                                data: [],
+                                borderColor: '#000000',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 10 } }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [4, 4] },
+                                ticks: { callback: value => '฿' + value.toLocaleString() + 'k' }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Populate all data fields correctly on run
+            updateBrandData();
+        });
+    </script>
+</body>
+</html>
